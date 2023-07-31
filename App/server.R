@@ -3,47 +3,69 @@ library(shiny)
 library(caret)
 library(rpart)
 library(randomForest)
+library(ggplot2)
 library(plotly)
 
 # Load Titanic dataset
 titanic <- read.csv('../dataset/titanic.csv')
+titanic$pclass1 <- as.factor(titanic$pclass) 
+titanic$survived1 <- as.factor(titanic$survived) 
+titanic$sex1 <- as.factor(titanic$sex) 
+titanic$embarked1 <- as.factor(titanic$embarked) 
 
 # Server
 shinyServer(function(input, output, session) {
   
-  
   # Data Exploration Page
-  # Generate dropdown menu options for numerical variables
-  numeric_vars <- reactive({
-    sapply(titanic, is.numeric)
+  # Create a reactive function for selected variables
+  selectedVars <- eventReactive(input$runGraph, {
+    if (input$GraphType == "bar") {
+      return(input$charvar)
+    } else if (input$GraphType == "hist") {
+      return(input$numvar)
+    } else {
+      return(c(input$numvar1, input$numvar2))
+    }
   })
   
-  observe({
-    updateSelectInput(session, "selected_var", choices = names(numeric_vars())[numeric_vars()])
-  })
-  
-  # Generate histogram of selected variable (using plotly for interactivity)
-  output$var_histogram <- renderPlotly({
-    selected_var <- input$selected_var
-    gg_var_histogram <- ggplot(titanic, aes_string(x = selected_var)) +
-      geom_histogram(binwidth = 5, fill = "skyblue", color = "white") +
-      labs(title = paste("Distribution of", selected_var), x = selected_var, y = "Count")
-    
-    # Convert ggplot to plotly
-    ggplotly(gg_var_histogram)
-  })
-  
-  # Generate table for categorical variable summaries
-  output$categorical_summaries <- renderTable({
-    summaries <- lapply(titanic, function(column) {
-      if (is.factor(column) || is.character(column)) {
-        table(column)
-      } else {
-        NULL
+  # Generate the selected plot using plotly
+  output$final_plot <- renderPlotly({
+    if (input$GraphType == "bar") {
+      # Pie chart
+      filtered_data <- titanic[!is.na(titanic[[selectedVars()]]), ]
+      if (nrow(filtered_data) == 0) {
+        return(NULL)
       }
-    })
-    summaries <- Filter(Negate(is.null), summaries) # Remove NULL elements
-    summaries
+      
+      ggplot(data = filtered_data, aes_string(x = selectedVars())) +
+        geom_bar(fill = "dodgerblue", color = "black") +
+        labs(title = paste("Bar Graph of", selectedVars())) +
+        theme_minimal()
+      
+    } else if (input$GraphType == "hist") {
+      # Histogram
+      filtered_data <- titanic[!is.na(titanic[[selectedVars()]]), ]
+      if (nrow(filtered_data) == 0) {
+        return(NULL)
+      }
+      
+      ggplot(data = filtered_data, aes_string(x = selectedVars())) +
+        geom_histogram(binwidth = 1, fill = "dodgerblue", color = "black") +
+        labs(title = paste("Histogram of", selectedVars())) +
+        theme_minimal()
+      
+    } else {
+      # Scatter plot
+      filtered_data <- titanic[complete.cases(titanic[selectedVars()]), ]
+      if (nrow(filtered_data) == 0) {
+        return(NULL)
+      }
+      
+      ggplot(data = filtered_data, aes_string(x = selectedVars()[1], y = selectedVars()[2])) +
+        geom_point(alpha = 0.6) +
+        labs(title = paste("Scatter Plot of", selectedVars()[1], "vs", selectedVars()[2])) +
+        theme_minimal()
+    }
   })
   
   # Data Page
@@ -57,5 +79,6 @@ shinyServer(function(input, output, session) {
     filename = function() { paste("titanic_dataset.csv") },
     content = function(file) { 
       write.csv(titanic, file) 
-      })
+    }
+  )
 })

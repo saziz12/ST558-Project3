@@ -62,51 +62,52 @@ shinyUI(
                                sidebarPanel(
                                  h2("Select a Graph or Summary"),
                                  radioButtons("GraphType", 
-                                              "Select Graph or Summary Type to Explore:",
-                                              c("A Piechart of a Single Categorical Variable" = "pie",
+                                              "Select Plot Type:",
+                                              c("A Bar Chart of a Single Categorical Variable" = "bar",
                                                 "A Histogram of a Single Numeric Variable" = "hist",
                                                 "A Scatter Plot of Two Numerical Variables" = "scatter",
                                                 selected = character(0))
+                                 ),
+                                 conditionalPanel(condition = "input.GraphType == 'bar'",
+                                                  radioButtons("charvar", 
+                                                               "Select Categorical Variable:",
+                                                               c("Ticket Class" = "pclass",
+                                                                 "Survival" = "survived",
+                                                                 "Sex" = "sex",
+                                                                 "Port of Embarkation" = "embarked"
+                                                               )
+                                                  )),
+                                 conditionalPanel(condition = "input.GraphType == 'hist'",
+                                                  radioButtons("numvar",
+                                                               "Select Numerical Variable:",
+                                                               c("Age" = "age",
+                                                                 "Number of Siblings/Spouses Aboard" = "sibsp",
+                                                                 "Number of Parents/Children Aboard" = "parch",
+                                                                 "Passenger Fare" = "fare"
+                                                               )
+                                                  )),
+                                 conditionalPanel(condition = "input.GraphType == 'scatter'",
+                                                  radioButtons("numvar1",
+                                                               "Select First Numerical Variable:",
+                                                               c("Age" = "age",
+                                                                 "Number of Siblings/Spouses Aboard" = "sibsp",
+                                                                 "Number of Parents/Children Aboard" = "parch",
+                                                                 "Passenger Fare" = "fare"
+                                                               )
+                                                  ),
+                                                  radioButtons("numvar2",
+                                                               "Select Second Numerical Variable:",
+                                                               c("Age" = "age",
+                                                                 "Number of Siblings/Spouses Aboard" = "sibsp",
+                                                                 "Number of Parents/Children Aboard" = "parch",
+                                                                 "Passenger Fare" = "fare"
+                                                               )
+                                                  )),
+                                 br(),
+                                 actionButton("runGraph", strong("Create Plot"))
                                ),
-                                conditionalPanel(condition = "input.GraphType == 'pie'",
-                                                 radioButtons("numvar", 
-                                                              "Select Categorical Variable",
-                                                              c("Ticket Class" = "pclass",
-                                                                "Survival" = "survived",
-                                                                "Sex" = "sex",
-                                                                "Port of Embarkation" = "embarked"
-                                                                )
-                                                )),
-                               conditionalPanel(condition = "input.GraphType == 'hist'",
-                                                radioButtons("charvar",
-                                                             "Select Numerical Variable",
-                                                             c("Age" = "age",
-                                                               "Number of Siblings/Spouses Aboard" = "sibsp",
-                                                               "Number of Parents/Children Aboard" = "parch",
-                                                               "Passenger Fare" = "fare"
-                                                             )
-                                                )),
-                               conditionalPanel(condition = "input.GraphType == 'scatter'",
-                                                radioButtons("numvar",
-                                                             "Select Numerical Variable",
-                                                             c("Age" = "age",
-                                                               "Number of Siblings/Spouses Aboard" = "sibsp",
-                                                               "Number of Parents/Children Aboard" = "parch",
-                                                               "Passenger Fare" = "fare"
-                                                             )
-                                                ),
-                                                radioButtons("charvar", 
-                                                             "Select Categorical Variable",
-                                                             c("Ticket Class" = "pclass",
-                                                               "Survival" = "survived",
-                                                               "Sex" = "sex",
-                                                               "Port of Embarkation" = "embarked"
-                                                             )
-                                                ))),
                                mainPanel(
-                                 selectInput("selected_var", "Select Variable to View Distribution:", ""),
-                                 # Interactive histogram of selected variable (using plotly)
-                                 plotlyOutput("var_histogram"),
+                                 plotlyOutput("final_plot"),
                                  # Table to display categorical variable summaries
                                  dataTableOutput("categorical_summaries")
                                )
