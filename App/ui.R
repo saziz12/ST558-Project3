@@ -57,24 +57,24 @@ shinyUI(
                   titlePanel("Data Exploration"),
                   br(),
                   tabsetPanel(
-                    tabPanel("Graphs",
+                    tabPanel("Graphical Summaries",
                              sidebarLayout(
                                sidebarPanel(
-                                 h2("Select a Graph or Summary"),
+                                 h2("Select a Graph Type"),
                                  radioButtons("GraphType", 
                                               "Select Plot Type:",
-                                              c("A Bar Chart of a Single Categorical Variable" = "bar",
+                                              c("A Box Plot of a Single Categorical Variable" = "box",
                                                 "A Histogram of a Single Numeric Variable" = "hist",
                                                 "A Scatter Plot of Two Numerical Variables" = "scatter",
                                                 selected = character(0))
                                  ),
-                                 conditionalPanel(condition = "input.GraphType == 'bar'",
+                                 conditionalPanel(condition = "input.GraphType == 'box'",
                                                   radioButtons("charvar", 
                                                                "Select Categorical Variable:",
-                                                               c("Ticket Class" = "pclass",
-                                                                 "Survival" = "survived",
-                                                                 "Sex" = "sex",
-                                                                 "Port of Embarkation" = "embarked"
+                                                               c("Ticket Class" = "pclass1",
+                                                                 "Survival" = "survived1",
+                                                                 "Sex" = "sex1",
+                                                                 "Port of Embarkation" = "embarked1"
                                                                )
                                                   )),
                                  conditionalPanel(condition = "input.GraphType == 'hist'",
@@ -105,11 +105,30 @@ shinyUI(
                                                   )),
                                  br(),
                                  actionButton("runGraph", strong("Create Plot"))
-                               ),
+                                 ),
                                mainPanel(
                                  plotlyOutput("final_plot"),
                                  # Table to display categorical variable summaries
                                  dataTableOutput("categorical_summaries")
+                               )
+                             )
+                    ), 
+                    tabPanel("Numerical Summaries", 
+                             sidebarLayout(
+                               sidebarPanel(
+                                 h2("Select a Summary Type"),
+                                 radioButtons("sumvar", 
+                                              "Select a Variable to Receive Summary Statistics:",
+                                              c("Age" = "age",
+                                                "Passenger Fare" = "fare",
+                                                "Survival" = "survived"
+                                              )
+                                 ),
+                                 br(),
+                                 actionButton("runSum", strong("Create Summary Statistic"))
+                               ),
+                               mainPanel(
+                                 verbatimTextOutput("summarystat")
                                )
                              )
                     )
