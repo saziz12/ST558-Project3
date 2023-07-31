@@ -3,6 +3,10 @@ library(shiny)
 library(shinydashboard)
 library(DT) # For interactive data table
 library(ggplot2)
+library(plotly)
+
+# Load Titanic dataset
+titanic <- read.csv('../dataset/titanic.csv')
 
 # UI
 shinyUI(
@@ -49,7 +53,16 @@ shinyUI(
         
         # Data Exploration Page
         tabItem(tabName = "data_explore",
-                # Add content
+                fluidPage(
+                  titlePanel("Data Exploration"),
+                  br(),
+                  # Dropdown for selecting variables for the distribution histogram
+                  selectInput("selected_var", "Select Variable to View Distribution:", NULL),
+                  # Interactive histogram of selected variable (using plotly)
+                  plotlyOutput("var_histogram"),
+                  # Table to display categorical variable summaries
+                  dataTableOutput("categorical_summaries")
+                )
         ),
         
         # Modeling Page
@@ -73,13 +86,49 @@ shinyUI(
         
         # Data Page
         tabItem(tabName = "data",
-                fluidPage(
-                  titlePanel("Data"),
-                  br(),
-                  # Display the Titanic dataset in a DataTable
-                  DTOutput("titanic_table"),
-                  # Button to download the dataset
-                  downloadButton("download_data", "Download Dataset")
+                tabsetPanel(
+                  tabPanel("Data",
+                           fluidPage(
+                             titlePanel("Data"),
+                             br(),
+                             # Display the Titanic dataset in a DataTable
+                             DTOutput("titanic_table"),
+                             # Button to download the dataset
+                             downloadButton("download_data", "Download Dataset")
+                           )
+                  ),
+                  tabPanel("Variable Information", 
+                           ## explain variables
+                           h2("Some Information about the Variables:"),
+                           h4("survival: Survival (0 = No, 1 = Yes)"),
+                           h4("pclass: Ticket Class (1 = 1st, 2 = 2nd, 3 = 3rd)"),
+                           h4("sex: Sex"),
+                           h4("Age: Age in years"),
+                           h4("sibsp: # of Siblings / Spouses aboard the Titanic"),
+                           h4("parch: # of Parents / Children aboard the Titanic"),
+                           h4("Ticket: Ticket Number"),
+                           h4("fare: Passenger Fare"),
+                           h4("cabin: Cabin Number"),
+                           h4("embarked: Port of Embarkation	(C = Cherbourg, Q = Queenstown, S = Southampton)"),
+                           
+                           ## notes about the variables
+                           h2("Variable Notes"),
+                           h4("pclass: A proxy for socio-economic status (SES)"),
+                           h5("1st = Upper"),
+                           h5("2nd = Middle"),
+                           h5("3rd = Lower"),
+                           br(),
+                           h4("age: Age is fractional if less than 1. If the age is estimated, is it in the form of xx.5"),
+                           br(),
+                           h4("sibsp: The dataset defines family relations in the way below"),
+                           h5("Sibling = brother, sister, stepbrother, stepsister"),
+                           h5("Spouse = husband, wife (mistresses and fiancés were ignored)"),
+                           br(),
+                           h4("parch: The dataset defines family relations in the way below"),
+                           h5("Parent = mother, father"),
+                           h5("Child = daughter, son, stepdaughter, stepson"),
+                           h6("Some children travelled only with a nanny, therefore parch=0 for them.")
+                           )
                 )
         )
       )
