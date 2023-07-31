@@ -46,8 +46,8 @@ shinyUI(
                   ),
                   br(),
                   h4("Image Related to Titanic:"),
-                  div(tags$img(src="titanic.png", width="85%", height="85%"),
-                      align="center"),
+                  div(tags$img(src = "titanic.png", width = "85%", height = "85%"),
+                      align = "center")
                 )
         ),
         
@@ -56,12 +56,63 @@ shinyUI(
                 fluidPage(
                   titlePanel("Data Exploration"),
                   br(),
-                  # Dropdown for selecting variables for the distribution histogram
-                  selectInput("selected_var", "Select Variable to View Distribution:", NULL),
-                  # Interactive histogram of selected variable (using plotly)
-                  plotlyOutput("var_histogram"),
-                  # Table to display categorical variable summaries
-                  dataTableOutput("categorical_summaries")
+                  tabsetPanel(
+                    tabPanel("Graphs",
+                             sidebarLayout(
+                               sidebarPanel(
+                                 h2("Select a Graph or Summary"),
+                                 radioButtons("GraphType", 
+                                              "Select Graph or Summary Type to Explore:",
+                                              c("A Piechart of a Single Categorical Variable" = "pie",
+                                                "A Histogram of a Single Numeric Variable" = "hist",
+                                                "A Scatter Plot of Two Numerical Variables" = "scatter",
+                                                selected = character(0))
+                               ),
+                                conditionalPanel(condition = "input.GraphType == 'pie'",
+                                                 radioButtons("numvar", 
+                                                              "Select Categorical Variable",
+                                                              c("Ticket Class" = "pclass",
+                                                                "Survival" = "survived",
+                                                                "Sex" = "sex",
+                                                                "Port of Embarkation" = "embarked"
+                                                                )
+                                                )),
+                               conditionalPanel(condition = "input.GraphType == 'hist'",
+                                                radioButtons("charvar",
+                                                             "Select Numerical Variable",
+                                                             c("Age" = "age",
+                                                               "Number of Siblings/Spouses Aboard" = "sibsp",
+                                                               "Number of Parents/Children Aboard" = "parch",
+                                                               "Passenger Fare" = "fare"
+                                                             )
+                                                )),
+                               conditionalPanel(condition = "input.GraphType == 'scatter'",
+                                                radioButtons("numvar",
+                                                             "Select Numerical Variable",
+                                                             c("Age" = "age",
+                                                               "Number of Siblings/Spouses Aboard" = "sibsp",
+                                                               "Number of Parents/Children Aboard" = "parch",
+                                                               "Passenger Fare" = "fare"
+                                                             )
+                                                ),
+                                                radioButtons("charvar", 
+                                                             "Select Categorical Variable",
+                                                             c("Ticket Class" = "pclass",
+                                                               "Survival" = "survived",
+                                                               "Sex" = "sex",
+                                                               "Port of Embarkation" = "embarked"
+                                                             )
+                                                ))),
+                               mainPanel(
+                                 selectInput("selected_var", "Select Variable to View Distribution:", ""),
+                                 # Interactive histogram of selected variable (using plotly)
+                                 plotlyOutput("var_histogram"),
+                                 # Table to display categorical variable summaries
+                                 dataTableOutput("categorical_summaries")
+                               )
+                             )
+                    )
+                  )
                 )
         ),
         
@@ -98,37 +149,40 @@ shinyUI(
                            )
                   ),
                   tabPanel("Variable Information", 
-                           ## explain variables
-                           h2("Some Information about the Variables:"),
-                           h4("survival: Survival (0 = No, 1 = Yes)"),
-                           h4("pclass: Ticket Class (1 = 1st, 2 = 2nd, 3 = 3rd)"),
-                           h4("sex: Sex"),
-                           h4("Age: Age in years"),
-                           h4("sibsp: # of Siblings / Spouses aboard the Titanic"),
-                           h4("parch: # of Parents / Children aboard the Titanic"),
-                           h4("Ticket: Ticket Number"),
-                           h4("fare: Passenger Fare"),
-                           h4("cabin: Cabin Number"),
-                           h4("embarked: Port of Embarkation	(C = Cherbourg, Q = Queenstown, S = Southampton)"),
-                           
-                           ## notes about the variables
-                           h2("Variable Notes"),
-                           h4("pclass: A proxy for socio-economic status (SES)"),
-                           h5("1st = Upper"),
-                           h5("2nd = Middle"),
-                           h5("3rd = Lower"),
-                           br(),
-                           h4("age: Age is fractional if less than 1. If the age is estimated, is it in the form of xx.5"),
-                           br(),
-                           h4("sibsp: The dataset defines family relations in the way below"),
-                           h5("Sibling = brother, sister, stepbrother, stepsister"),
-                           h5("Spouse = husband, wife (mistresses and fiancés were ignored)"),
-                           br(),
-                           h4("parch: The dataset defines family relations in the way below"),
-                           h5("Parent = mother, father"),
-                           h5("Child = daughter, son, stepdaughter, stepson"),
-                           h6("Some children travelled only with a nanny, therefore parch=0 for them.")
+                           fluidPage(
+                             titlePanel("Variable Information"),
+                             ## explain variables
+                             h2("Some Information about the Variables:"),
+                             h4("survival: Survival (0 = No, 1 = Yes)"),
+                             h4("pclass: Ticket Class (1 = 1st, 2 = 2nd, 3 = 3rd)"),
+                             h4("sex: Sex"),
+                             h4("Age: Age in years"),
+                             h4("sibsp: # of Siblings / Spouses aboard the Titanic"),
+                             h4("parch: # of Parents / Children aboard the Titanic"),
+                             h4("Ticket: Ticket Number"),
+                             h4("fare: Passenger Fare"),
+                             h4("cabin: Cabin Number"),
+                             h4("embarked: Port of Embarkation (C = Cherbourg, Q = Queenstown, S = Southampton)"),
+                             
+                             ## notes about the variables
+                             h2("Variable Notes"),
+                             h4("pclass: A proxy for socio-economic status (SES)"),
+                             h5("1st = Upper"),
+                             h5("2nd = Middle"),
+                             h5("3rd = Lower"),
+                             br(),
+                             h4("age: Age is fractional if less than 1. If the age is estimated, it is in the form of xx.5"),
+                             br(),
+                             h4("sibsp: The dataset defines family relations in the following way:"),
+                             h5("Sibling = brother, sister, stepbrother, stepsister"),
+                             h5("Spouse = husband, wife (mistresses and fiancés were ignored)"),
+                             br(),
+                             h4("parch: The dataset defines family relations in the following way:"),
+                             h5("Parent = mother, father"),
+                             h5("Child = daughter, son, stepdaughter, stepson"),
+                             h6("Some children travelled only with a nanny, therefore parch=0 for them.")
                            )
+                  )
                 )
         )
       )

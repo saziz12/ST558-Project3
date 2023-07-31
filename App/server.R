@@ -46,8 +46,6 @@ shinyServer(function(input, output, session) {
     summaries
   })
   
-  
-  
   # Data Page
   # Display the Titanic dataset in a DataTable
   output$titanic_table <- renderDT({
