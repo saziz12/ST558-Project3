@@ -42,7 +42,8 @@ shinyUI(
                   ),
                   br(),
                   h4("Image Related to Titanic:"),
-                  img(src = "../images/titanic.jpeg", width = "50%")
+                  div(tags$img(src="titanic.png", width="85%", height="85%"),
+                      align="center"),
                 )
         ),
         
