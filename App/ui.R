@@ -26,7 +26,7 @@ shinyUI(
         # About Page
         tabItem(tabName = "about",
                 fluidPage(
-                  titlePanel("About Titanic Analysis App"),
+                  titlePanel("About the Titanic Analysis App"),
                   br(),
                   h4("Purpose:"),
                   p("This Shiny app is designed to analyze the Titanic dataset and provide insights and analysis into the passengers' information and survival outcomes on the Titanic."),
@@ -141,10 +141,10 @@ shinyUI(
                   # Modeling Info tab with model-specific sub-tabs
                   tabPanel("Modeling Info",
                            tabsetPanel(
-                             # Sub-tab for Multiple Linear Regression / Generalized Linear Regression
-                             tabPanel("Multiple Linear Regression / Generalized Linear Regression", tabName = "model_info_lm",
+                             # Sub-tab for Multiple Linear Regression
+                             tabPanel("Multiple Linear Regression", tabName = "model_info_lm",
                                       fluidPage(
-                                        titlePanel("Multiple Linear Regression / Generalized Linear Regression"),
+                                        titlePanel("Multiple Linear Regression"),
                                         h4("Multiple linear regression is a statistical method used to model the relationship between a dependent variable and two or more independent variables. It assumes that the relationship between the dependent variable and the independent variables is linear. The model can be represented as:"),
                                         h4(withMathJax(helpText("$$Y_i=\\beta_0+\\beta_1x_{1i}+\\beta_2x_{2i}+\\beta_3x_{1i}x_{2i}  +...+ E_i$$"))),
                                         br(),
@@ -160,14 +160,11 @@ shinyUI(
                                       )
                              ),
                              
-                             # Sub-tab for Regression Tree
-                             tabPanel("Regression Tree",
+                             # Sub-tab for Classification Tree
+                             tabPanel("Classification Tree",
                                       fluidPage(
-                                        titlePanel("Regression Tree"),
-                                        # ... (Modeling Info for Regression Tree content)
-                                        # Example:
-                                        h4("Regression Tree:"),
-                                        p("A regression tree is a decision tree-based model used for regression tasks."),
+                                        titlePanel("Classification Tree"),
+                                        p("A decision tree is a flowchart-like tree structure where each internal node represents a test on an attribute, each branch represents the outcome of the test, and each leaf node represents a decision or a prediction. The tree is built by recursively splitting the data into subsets based on the best predictor that maximizes information gain or minimizes impurity for classification tasks."),
                                         p("It recursively partitions the data into subsets and fits a simple model (e.g., mean or median) to each subset."),
                                         # ... (continue with explanations of regression tree)
                                       )
@@ -189,7 +186,8 @@ shinyUI(
                   
                   # Model Fitting tab
                   tabPanel("Model Fitting", tabName = "model_fitting",
-                           fluidPage(
+                           sidebarLayout(
+                             sidebarPanel(
                              h1("Model Fitting with Survival as the Dependent Variable"),
                              h2("Train/Test Split"),
                              sliderInput("train_test_split", "Proportion of Data for Training:", 
@@ -221,7 +219,7 @@ shinyUI(
                                                   "Number of Siblings/Spouses Aboard" = "sibsp",
                                                   "Number of Parents/Children Aboard" = "parch"
                                                 )),
-                             checkboxInput("fit_model_tree", "Fit Regression Tree"),
+                             checkboxInput("fit_model_tree", "Fit Classification Tree"),
                              br(),
                              br(),
                              br(),
@@ -241,9 +239,12 @@ shinyUI(
                              actionButton("fit_models_button", "Fit Models"),
                              br(),
                              br(),
-                             br(),
+                             br()
+                             ),
+                             mainPanel(
                              h2("Model Fit Statistics:"),
                              verbatimTextOutput("model_fit_stats")
+                             )
                            )
                   ),
                   
@@ -251,9 +252,41 @@ shinyUI(
                   tabPanel("Prediction", tabName = "prediction",
                            fluidPage(
                              titlePanel("Prediction"),
-                             # ... (Prediction content)
+                             selectInput("prediction_model", "Select Model:",
+                                         choices = c("Multiple Linear Regression", "Regression Tree", "Random Forest")),
+                             conditionalPanel(condition = "input.prediction_model == 'Multiple Linear Regression'",
+                                              # Add input elements for predictors relevant to MLR model
+                                              numericInput("age_pred_mlr", "Age:", value = 25, min = 0, max = 100),
+                                              radioButtons("sex_pred_mlr", "Sex:",
+                                                           choices = c("Male", "Female"), selected = "Male"),
+                                              radioButtons("pclass_pred_mlr", "Ticket Class:",
+                                                           choices = c("1st", "2nd", "3rd"), selected = "3rd")
+                             ),
+                             conditionalPanel(condition = "input.prediction_model == 'Regression Tree'",
+                                              # Add input elements for predictors relevant to Regression Tree model
+                                              numericInput("age_pred_tree", "Age:", value = 25, min = 0, max = 100),
+                                              radioButtons("sex_pred_tree", "Sex:",
+                                                           choices = c("Male", "Female"), selected = "Male"),
+                                              radioButtons("pclass_pred_tree", "Ticket Class:",
+                                                           choices = c("1st", "2nd", "3rd"), selected = "3rd")
+                             ),
+                             conditionalPanel(condition = "input.prediction_model == 'Random Forest'",
+                                              # Add input elements for predictors relevant to Random Forest model
+                                              numericInput("age_pred_rf", "Age:", value = 25, min = 0, max = 100),
+                                              radioButtons("sex_pred_rf", "Sex:",
+                                                           choices = c("Male", "Female"), selected = "Male"),
+                                              radioButtons("pclass_pred_rf", "Ticket Class:",
+                                                           choices = c("1st", "2nd", "3rd"), selected = "3rd")
+                             ),
+                             br(),
+                             actionButton("predict_button", "Predict"),
+                             br(),
+                             br(),
+                             h2("Prediction Result:"),
+                             verbatimTextOutput("prediction_result")
                            )
                   )
+                  
                 )
         ),
         
@@ -268,8 +301,11 @@ shinyUI(
                              br(),
                              # Display the Titanic dataset in a DataTable
                              DTOutput("titanic_table"),
+                             br(),
+                             br(),
+                             br(),
                              # Button to download the dataset
-                             downloadButton("download_data", "Download Dataset")
+                             downloadButton("download_data", strong("Download Dataset"))
                            )
                   ),
                   tabPanel("Variable Information",
