@@ -243,7 +243,8 @@ shinyUI(
                              ),
                              mainPanel(
                              h2("Model Fit Statistics:"),
-                             verbatimTextOutput("model_fit_stats")
+                             verbatimTextOutput("model_fit_stats"),
+                             verbatimTextOutput("output_text")
                              )
                            )
                   ),
@@ -253,30 +254,27 @@ shinyUI(
                            fluidPage(
                              titlePanel("Prediction"),
                              selectInput("prediction_model", "Select Model:",
-                                         choices = c("Multiple Linear Regression", "Regression Tree", "Random Forest")),
+                                         choices = c("Multiple Linear Regression", "Classification Tree", "Random Forest")),
                              conditionalPanel(condition = "input.prediction_model == 'Multiple Linear Regression'",
-                                              # Add input elements for predictors relevant to MLR model
                                               numericInput("age_pred_mlr", "Age:", value = 25, min = 0, max = 100),
                                               radioButtons("sex_pred_mlr", "Sex:",
-                                                           choices = c("Male", "Female"), selected = "Male"),
+                                                           choices = c("Male" = "male", "Female" = "female"), selected = "Male"),
                                               radioButtons("pclass_pred_mlr", "Ticket Class:",
-                                                           choices = c("1st", "2nd", "3rd"), selected = "3rd")
+                                                           choices = c("1st" = 1 , "2nd" = 2, "3rd" = 3), selected = "3rd")
                              ),
-                             conditionalPanel(condition = "input.prediction_model == 'Regression Tree'",
-                                              # Add input elements for predictors relevant to Regression Tree model
+                             conditionalPanel(condition = "input.prediction_model == 'Classification Tree'",
                                               numericInput("age_pred_tree", "Age:", value = 25, min = 0, max = 100),
                                               radioButtons("sex_pred_tree", "Sex:",
-                                                           choices = c("Male", "Female"), selected = "Male"),
+                                                           choices = c("Male" = "male", "Female" = "female"), selected = "Male"),
                                               radioButtons("pclass_pred_tree", "Ticket Class:",
-                                                           choices = c("1st", "2nd", "3rd"), selected = "3rd")
+                                                           choices = c("1st" = 1 , "2nd" = 2, "3rd" = 3), selected = "3rd")
                              ),
                              conditionalPanel(condition = "input.prediction_model == 'Random Forest'",
-                                              # Add input elements for predictors relevant to Random Forest model
                                               numericInput("age_pred_rf", "Age:", value = 25, min = 0, max = 100),
                                               radioButtons("sex_pred_rf", "Sex:",
-                                                           choices = c("Male", "Female"), selected = "Male"),
+                                                           choices = c("Male" = "male", "Female" = "female"), selected = "Male"),
                                               radioButtons("pclass_pred_rf", "Ticket Class:",
-                                                           choices = c("1st", "2nd", "3rd"), selected = "3rd")
+                                                           choices = c("1st" = 1 , "2nd" = 2, "3rd" = 3), selected = "3rd")
                              ),
                              br(),
                              actionButton("predict_button", "Predict"),
