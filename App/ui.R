@@ -26,26 +26,24 @@ shinyUI(
         # About Page
         tabItem(tabName = "about",
                 fluidPage(
-                  titlePanel("About the Titanic Analysis App"),
+                  h1("About the Titanic Analysis App"),
                   br(),
-                  h4("Purpose:"),
-                  p("This Shiny app is designed to analyze the Titanic dataset and provide insights and analysis into the passengers' information and survival outcomes on the Titanic."),
+                  h2("Purpose:"),
+                  h4("This Shiny app is designed to view, explore, and analyze the Titanic dataset and provide insights into the passengers' information and survival outcomes on the Titanic."),
                   br(),
-                  h4("Data Source:"),
-                  p("The dataset used in this app is the famous Titanic dataset, which contains information about the passengers onboard the Titanic ship, including their age, gender, ticket class, fare, and survival status."),
-                  p("You can find more information about the Titanic dataset at the Kaggle website:"),
-                  p(a("Kaggle Titanic Dataset", href = "https://www.kaggle.com/c/titanic")),
+                  h2("Data Source:"),
+                  h4("The dataset used in this app is the famous Titanic dataset, which contains information about the passengers onboard the Titanic ship, including their age, gender, ticket class, fare, survival status, etc."),
+                  h4("You can find more information about the Titanic dataset at the Kaggle website:"),
+                  h4(a("Kaggle Titanic Dataset", href = "https://www.kaggle.com/c/titanic")),
                   br(),
-                  h4("App Tabs:"),
-                  p("This app consists of four tabs:"),
-                  tags$ol(
-                    tags$li("About: Provides an overview of the app and dataset."),
-                    tags$li("Data Exploration: Allows users to explore the data through numerical and graphical summaries."),
-                    tags$li("Modeling: Enables users to fit supervised learning models and make predictions."),
-                    tags$li("Data: Allows users to view and save the Titanic dataset.")
-                  ),
+                  h2("App Tabs:"),
+                  h4("This app consists of four tabs:"),
+                  h4("1. About: Provides an overview of the app, its structure, and the dataset."),
+                  h4("2. Data Exploration: Allows users to explore the data through numerical and graphical summaries."),
+                  h4("3. Modeling: Enables users to fit supervised learning models and make predictions."),
+                  h4("4. Data: Allows users to view, subset, and save the Titanic dataset."),
                   br(),
-                  h4("Image Related to Titanic:"),
+                  br(),
                   div(tags$img(src = "titanic.png", width = "85%", height = "85%"),
                       align = "center")
                 )
@@ -164,22 +162,34 @@ shinyUI(
                              tabPanel("Classification Tree",
                                       fluidPage(
                                         titlePanel("Classification Tree"),
-                                        p("A decision tree is a flowchart-like tree structure where each internal node represents a test on an attribute, each branch represents the outcome of the test, and each leaf node represents a decision or a prediction. The tree is built by recursively splitting the data into subsets based on the best predictor that maximizes information gain or minimizes impurity for classification tasks."),
-                                        p("It recursively partitions the data into subsets and fits a simple model (e.g., mean or median) to each subset."),
-                                        # ... (continue with explanations of regression tree)
+                                        h4("A decision tree is a flowchart-like tree structure where each internal node represents a test on an attribute, each branch represents the outcome of the test, and each leaf node represents a decision or a prediction. The tree is built by recursively splitting the data into subsets based on the best predictor that maximizes information gain or minimizes impurity for classification tasks."),
+                                        br(),
+                                        h4(strong("Benefits:")),
+                                        h4("1. Decision Trees can handle non-linear relationships between the dependent and independent variables without any explicit assumptions."),
+                                        h4("2. The decision tree structure is easy to understand and interpret, making it suitable for explaining the model's decision-making process."),
+                                        h4("3. The decision tree model provides information about the importance of each predictor in making decisions."),
+                                        br(),
+                                        h4(strong("Drawbacks:")),
+                                        h4("1. Decision trees can easily overfit the data, especially if the tree is deep and captures noise in the training data."),
+                                        h4("2. Small changes in the data can lead to a different tree structure, making the model unstable."),
+                                        h4("3. Decision trees may not capture complex relationships as well as other models.")
                                       )
                              ),
                              # Sub-tab for Random Forest
                              tabPanel("Random Forest",
                                       fluidPage(
                                         titlePanel("Random Forest"),
-                                        # ... (Modeling Info for Random Forest content)
-                                        # Example:
-                                        h4("Random Forest:"),
-                                        p("Random Forest is an ensemble learning method that combines multiple decision trees."),
-                                        p("It improves the accuracy and reduces overfitting compared to a single decision tree."),
-                                        # ... (continue with explanations of random forest)
-                                      )
+                                        h4("Random Forest is an ensemble learning method that constructs multiple decision trees during training and outputs the class that is the mode of the classes (classification) or the mean prediction (regression) of the individual trees. Each tree is built on a different subset of the data (bagging) and a random subset of the features, and the final prediction is obtained through voting or averaging."),
+                                        br(),
+                                        h4(strong("Benefits:")),
+                                        h4("1. Random Forest reduces overfitting by averaging the predictions of multiple trees, which helps to improve generalization performance."),
+                                        h4("2. The model is less sensitive to outliers and noisy data due to the averaging effect of multiple trees."),
+                                        h4("3. Random Forest provides a measure of feature importance, helping to identify the most influential predictors."), 
+                                        br(),
+                                        h4(strong("Drawbacks:")),
+                                        h4("1. The Random Forest model may be computationally expensive and challenging to interpret due to the ensemble of multiple trees."),
+                                        h4("2. Random Forest has hyperparameters that need to be optimized to achieve better performance, making the tuning process more involved.")
+                                        )
                              )
                            )
                   ),
